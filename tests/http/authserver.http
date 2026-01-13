@@ -1,0 +1,220 @@
+### 测试获取元数据
+# @name meta
+GET {{host}}
+Accept: application/json
+
+###
+
+### 测试认证接口 (Alice 登录)
+# @name authenticate
+POST {{host}}/authserver/authenticate
+Content-Type: application/json
+
+{
+  "username": "alice@example.com",
+  "password": "123456",
+  "clientToken": "Test",
+  "requestUser": true
+}
+
+> {%
+    client.test("登录成功并存入 Token", function() {
+        client.assert(response.status === 200, "登录失败");
+        client.global.set("auth_token", response.body.accessToken);
+    });
+%}
+
+### 测试认证接口 (Bob 登录)
+# @name authenticate2
+POST {{host}}/authserver/authenticate
+Content-Type: application/json
+
+{
+  "username": "bob@example.com",
+  "password": "654321",
+  "clientToken": "Test",
+  "requestUser": true
+}
+
+> {%
+    client.test("登录成功并存入 Token", function() {
+        client.assert(response.status === 200, "登录失败");
+        // 捕获规范要求的 accessToken
+        client.global.set("auth_token_2", response.body.accessToken);
+    });
+%}
+
+###
+
+### 测试非法登录 (密码错误)
+# @name authenticate failed
+POST {{host}}/authserver/authenticate
+Content-Type: application/json
+
+{
+  "username": "bob@example.com",
+  "password": "1111",
+  "clientToken": "Test"
+}
+
+> {%
+    client.test("密码错误，登录失败，返回403",function () {
+        client.assert(response.status === 403 && response.body.error === "ForbiddenOperationException")
+    })
+%}
+
+###
+
+### 验证有效令牌
+# @name validate
+POST {{host}}/authserver/validate
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token}}",
+  "clientToken": "Test"
+}
+
+> {%
+    client.test("有效令牌返回 204", function() {
+        client.assert(response.status === 204);
+    });
+%}
+
+###
+
+### 验证 ClientToken 不匹配
+# @name validate wrong client
+POST {{host}}/authserver/validate
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token}}",
+  "clientToken": "Wrong-Client-ID"
+}
+
+> {%
+    client.test("ClientToken 不匹配返回403", function() {
+        client.assert(response.status === 403 && response.body.error === "ForbiddenOperationException")
+    });
+%}
+
+###
+
+### 验证令牌失效
+# @name validate wrong token
+POST {{host}}/authserver/validate
+Content-Type: application/json
+
+{
+  "accessToken": "00000000-0000-0000-0000-000000000000"
+}
+
+> {%
+    client.test("不存在的令牌返回 403", function() {
+        client.assert(response.status === 403 && response.body.error === "ForbiddenOperationException")
+    });
+%}
+
+###
+
+### 刷新token
+# @name refresh token
+POST {{host}}/authserver/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token}}",
+  "clientToken": "Test",
+  "requestUser": true
+}
+
+> {%
+    client.test("刷新 Token 成功", function() {
+        client.assert(response.status === 200, "失败");
+        client.global.set("auth_token", response.body.accessToken);
+    });
+%}
+
+###
+
+### 刷新token, 更新profile
+# @name refresh token, select profile
+POST {{host}}/authserver/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token_2}}",
+  "clientToken": "Test",
+  "selectedProfile": {
+    "id": "00000000-0000-0000-0000-000000000005"
+  },
+  "requestUser": true
+}
+
+> {%
+    client.test("刷新 Token 成功", function() {
+        client.assert(response.status === 200, "失败");
+        client.assert(response.body.selectedProfile.id === "00000000-0000-0000-0000-000000000005", "选择角色失败")
+        client.global.set("auth_token_2", response.body.accessToken);
+    });
+%}
+
+###
+
+### 刷新token，重复选择角色失败
+# @name refresh token, selected profile failed
+POST {{host}}/authserver/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token}}",
+  "clientToken": "Test",
+  "selectedProfile": {
+    "id": "00000000-0000-0000-0000-000000000003"
+  },
+  "requestUser": true
+}
+
+> {%
+    client.test("不能重复选择, 返回403", function() {
+        client.assert(response.status === 403);
+        client.assert(response.body.error === "IllegalArgumentException")
+    });
+%}
+
+###
+
+### 吊销token
+# @name invalidate token
+POST {{host}}/authserver/invalidate
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token}}",
+  "clientToken": "Test"
+}
+
+> {%
+    client.test("返回 204", function() {
+        client.assert(response.status === 204);
+    });
+%}
+
+###
+
+### 登出
+# @name signout
+POST {{host}}/authserver/signout
+Content-Type: application/json
+
+{
+  "username": "bob@example.com",
+  "password": "654321"
+}
+
+> {%
+    client.test("返回 204", function() {
+        client.assert(response.status === 204);
+    });
+%}
