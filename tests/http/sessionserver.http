@@ -2,3 +2,60 @@
 # @name get profile
 GET {{host}}/sessionserver/session/minecraft/profile/00000000-0000-0000-0000-000000000003
 Accept: application/json
+
+### 登录
+# @name auth
+POST {{host}}/authserver/authenticate
+Content-Type: application/json
+
+{
+  "username": "alice@example.com",
+  "password": "123456",
+  "clientToken": "Test",
+  "requestUser": true
+}
+
+> {%
+    client.test("登录成功并存入 Token", function() {
+        client.assert(response.status === 200, "登录失败");
+        client.global.set("auth_token", response.body.accessToken);
+    });
+%}
+
+### 加入服务器
+# @name join server
+POST {{host}}/sessionserver/session/minecraft/join
+Content-Type: application/json
+
+{
+  "accessToken": "{{auth_token}}",
+  "selectedProfile": "00000000000000000000000000000003",
+  "serverId": "Test-Server"
+}
+
+> {%
+    client.test("返回 204", function() {
+        client.assert(response.status === 204);
+    });
+%}
+
+### 验证加入服务器
+# @name check has Joined
+GET {{host}}/sessionserver/session/minecraft/hasJoined?username=Alice&serverId=Test-Server
+
+> {%
+    client.test("已加入", function() {
+        client.assert(response.status === 200);
+        client.assert(response.body.name === "Alice")
+    });
+%}
+
+### 验证加入服务器失败
+# @name check has Joined Failed
+GET {{host}}/sessionserver/session/minecraft/hasJoined?username=Bob&serverId=Test-Server
+
+> {%
+    client.test("返回 204", function() {
+        client.assert(response.status === 204);
+    });
+%}

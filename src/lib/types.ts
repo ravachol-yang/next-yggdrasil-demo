@@ -27,6 +27,12 @@ export interface Token {
     createdAt: Date;
 }
 
+export interface Session {
+    accessToken: string;
+    username: string;
+    userid: string;
+}
+
 class YggdrasilException {
     error: string;
     errorMessage: string;
