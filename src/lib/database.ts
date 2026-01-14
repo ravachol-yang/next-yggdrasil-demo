@@ -1,4 +1,5 @@
-import {Profile, User} from "@/lib/types";
+import {Profile, Skin, Texture, User} from "@/lib/types";
+import {signProperty} from "@/lib/util";
 
 const USERS: User[] = [
     {id: "00000000-0000-0000-0000-000000000001",
@@ -6,19 +7,27 @@ const USERS: User[] = [
         password: "123456" },
     { id: "00000000-0000-0000-0000-000000000002",
         email: "bob@example.com",
-        password: "654321" },
+        password: "654321"},
 ];
 
 const PROFILES: Profile[] = [
     {id: "00000000-0000-0000-0000-000000000003",
         owner:"00000000-0000-0000-0000-000000000001",
-        name: "Alice"},
+        name: "Alice",
+        skinId: 1},
     {id: "00000000-0000-0000-0000-000000000004",
         owner:"00000000-0000-0000-0000-000000000002",
         name: "Bob"},
     {id: "00000000-0000-0000-0000-000000000005",
         owner:"00000000-0000-0000-0000-000000000002",
         name: "Carol"},
+]
+
+const SKINS: Skin[] = [
+    {id: 1,
+        url: process.env.SKIN_URL+"/textures/c826deba422fc0adedf2c9d9f9fb8995eecdd92f28b5754c0e82390d2b3f88bb.png",
+        metadata: {model: "default"}
+    }
 ]
 
 export const DB = {
@@ -37,6 +46,40 @@ export const DB = {
 
     getProfileById(id: string): Profile | undefined {
         return PROFILES.find(profile => profile.id.replace(/-/g, '')=== id);
-    }
+    },
 
+    getProfileByIdWithProperties(id: string): Profile | undefined {
+        const originalProfile = this.getProfileById(id);
+        if (!originalProfile) {return undefined}
+
+        const profile = { ...originalProfile }
+
+        if (profile.skinId) {
+            const skin = DB.getSkinById(profile.skinId);
+            if (skin) {
+                const texture: Texture = {
+                    timestamp: Date.now(),
+                    profileId: profile.id.replace(/-/g, ''),
+                    profileName: profile.name,
+                    textures: {
+                        SKIN: {...skin, id: undefined}
+                    }
+                }
+
+                const value = Buffer.from(JSON.stringify(texture)).toString("base64")
+
+                const signature = signProperty(value)
+                const property= {name: "textures", value, signature};
+                profile.properties = [property];
+            }
+        }
+
+        profile.id = profile.id.replace(/-/g, '');
+
+        return profile;
+    },
+
+    getSkinById(id: number): Skin | undefined {
+        return SKINS.find(skin => skin.id === id);
+    }
 }

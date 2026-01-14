@@ -12,10 +12,30 @@ export interface Profile {
     id: string;
     name: string;
     owner: string;
-    properties?: {
-        name: string;
-        value: string;
-        signature?: string;
+    skinId?: number;
+    properties?: [
+        {
+            name: string;
+            value: string;
+            signature?: string;
+        }
+    ]
+}
+
+export interface Skin {
+    id?: number;
+    url: string;
+    metadata: {
+        model: "default" | "slim"
+    }
+}
+
+export interface Texture {
+    timestamp: number;
+    profileId: string;
+    profileName: string;
+    textures: {
+        SKIN?: Skin
     }
 }
 

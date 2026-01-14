@@ -21,7 +21,7 @@ export async function GET(req: Request) {
         return new NextResponse(null, { status: 204 });
     }
 
-    const profile = DB.getProfileById(session.userid.replace(/-/g, ''));
+    const profile = DB.getProfileByIdWithProperties(session.userid.replace(/-/g, ''));
 
     if (!profile) {
         return new NextResponse(null, { status: 204 });

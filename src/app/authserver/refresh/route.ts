@@ -48,7 +48,7 @@ export async function POST(req: Request) {
             return NextResponse.json(new IllegalArgumentException(),
                 {status: 403});
         }
-        profile = DB.getProfileById(selectedProfile.id);
+        profile = DB.getProfileById(selectedProfile.id.replace(/-/g, ''));
         if (!profile || profile.owner != newToken.owner) {
             return NextResponse.json(new ForbiddenOperationException("Invalid token"),
                 {status: 403})

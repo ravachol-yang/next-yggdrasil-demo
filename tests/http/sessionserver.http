@@ -1,6 +1,6 @@
 ### 获取角色信息
 # @name get profile
-GET {{host}}/sessionserver/session/minecraft/profile/00000000-0000-0000-0000-000000000003
+GET {{host}}/sessionserver/session/minecraft/profile/00000000000000000000000000000003
 Accept: application/json
 
 ### 登录

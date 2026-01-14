@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import {rsaPubKey} from "@/lib/crypto";
 
 export async function GET() {
-    const publicKey = process.env.RSA_PUBLIC_KEY?.replace(/\\n/g, '\n');
+    const publicKey = rsaPubKey;
+    const skinDomain = process.env.SKIN_DOMAIN?.replace(/\\n/g, '\n');
 
     return NextResponse.json({
         meta: {
@@ -10,7 +12,7 @@ export async function GET() {
             implementationVersion: "1.0.0",
             "feature.non_email_login": true
         },
-        skinDomains: ["localhost"],
+        skinDomains: [skinDomain],
         signaturePublickey: publicKey
     });
 }
