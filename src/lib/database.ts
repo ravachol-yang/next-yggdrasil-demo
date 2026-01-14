@@ -17,16 +17,26 @@ const PROFILES: Profile[] = [
         skinId: 1},
     {id: "00000000-0000-0000-0000-000000000004",
         owner:"00000000-0000-0000-0000-000000000002",
-        name: "Bob"},
+        name: "Bob",
+        skinId: 2},
     {id: "00000000-0000-0000-0000-000000000005",
         owner:"00000000-0000-0000-0000-000000000002",
-        name: "Carol"},
+        name: "Carol",
+        skinId: 3},
 ]
 
 const SKINS: Skin[] = [
     {id: 1,
-        url: process.env.SKIN_URL+"/textures/c826deba422fc0adedf2c9d9f9fb8995eecdd92f28b5754c0e82390d2b3f88bb.png",
+        url: process.env.SKIN_URL+"/textures/063244a449f0cd3e8ce348afdfcc575337f03da79c93b78210f5eaf7deea4e94.png",
+        metadata: {model: "slim"}
+    },
+    {id: 2,
+        url: process.env.SLIN_URL+"/textures/c826deba422fc0adedf2c9d9f9fb8995eecdd92f28b5754c0e82390d2b3f88bb.png",
         metadata: {model: "default"}
+    },
+    {id: 3,
+        url: process.env.SLIN_URL+"/textures/bee257ddb00915e4f4cf1bed803cce891e35873be7ae6d69f0e270d532471be1.png",
+        metadata: {model: "slim"}
     }
 ]
 
