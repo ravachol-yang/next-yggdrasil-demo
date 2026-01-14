@@ -31,11 +31,11 @@ const SKINS: Skin[] = [
         metadata: {model: "slim"}
     },
     {id: 2,
-        url: process.env.SLIN_URL+"/textures/c826deba422fc0adedf2c9d9f9fb8995eecdd92f28b5754c0e82390d2b3f88bb.png",
+        url: process.env.SKIN_URL+"/textures/c826deba422fc0adedf2c9d9f9fb8995eecdd92f28b5754c0e82390d2b3f88bb.png",
         metadata: {model: "default"}
     },
     {id: 3,
-        url: process.env.SLIN_URL+"/textures/bee257ddb00915e4f4cf1bed803cce891e35873be7ae6d69f0e270d532471be1.png",
+        url: process.env.SKIN_URL+"/textures/bee257ddb00915e4f4cf1bed803cce891e35873be7ae6d69f0e270d532471be1.png",
         metadata: {model: "slim"}
     }
 ]
