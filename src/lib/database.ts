@@ -14,15 +14,18 @@ const PROFILES: Profile[] = [
     {id: "00000000-0000-0000-0000-000000000003",
         owner:"00000000-0000-0000-0000-000000000001",
         name: "Alice",
-        skinId: 1},
+        skinId: 1,
+        uploadableTextures: "skin"},
     {id: "00000000-0000-0000-0000-000000000004",
         owner:"00000000-0000-0000-0000-000000000002",
         name: "Bob",
-        skinId: 2},
+        skinId: 2,
+        uploadableTextures: "skin"},
     {id: "00000000-0000-0000-0000-000000000005",
         owner:"00000000-0000-0000-0000-000000000002",
         name: "Carol",
-        skinId: 3},
+        skinId: 3,
+        uploadableTextures: "skin,cape"},
 ]
 
 const SKINS: Skin[] = [
@@ -79,14 +82,18 @@ export const DB = {
                 const value = Buffer.from(JSON.stringify(texture)).toString("base64")
 
                 const signature = signProperty(value)
-                const property= {name: "textures", value, signature};
-                profile.properties = [property];
+                const property = {name: "textures", value, signature};
+                profile.properties = [property, ...(profile.properties || [])];
             }
+        }
+
+        if (profile.uploadableTextures) {
+            profile.properties = [{name: "uploadableTextures", value: profile.uploadableTextures}, ...(profile.properties || [])];
         }
 
         profile.id = profile.id.replace(/-/g, '');
 
-        return profile;
+        return {...profile, skinId:undefined, uploadableTextures:undefined};
     },
 
     getSkinById(id: number): Skin | undefined {

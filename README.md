@@ -10,7 +10,7 @@
 
 `POST /authserver/invalidate` 吊销令牌
 
-`POST /authserver/invalidate` 登出
+`POST /authserver/signout` 登出
 
 `POST /sessionserver/session/minecraft/join` 客户端进入服务器(不记录ip)
 

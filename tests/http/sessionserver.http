@@ -3,6 +3,14 @@
 GET {{host}}/sessionserver/session/minecraft/profile/00000000000000000000000000000003
 Accept: application/json
 
+> {%
+    client.test("成功获取角色信息", function() {
+        client.assert(response.status === 200,);
+        client.assert(response.body.name === "Alice");
+        client.assert(response.body.properties.length === 2);
+    });
+%}
+
 ### 登录
 # @name auth
 POST {{host}}/authserver/authenticate
@@ -53,6 +61,22 @@ GET {{host}}/sessionserver/session/minecraft/hasJoined?username=Alice&serverId=T
 ### 验证加入服务器失败
 # @name check has Joined Failed
 GET {{host}}/sessionserver/session/minecraft/hasJoined?username=Bob&serverId=Test-Server
+
+> {%
+    client.test("返回 204", function() {
+        client.assert(response.status === 204);
+    });
+%}
+
+### 登出
+# @name signout
+POST {{host}}/authserver/signout
+Content-Type: application/json
+
+{
+  "username": "alice@example.com",
+  "password": "123456"
+}
 
 > {%
     client.test("返回 204", function() {

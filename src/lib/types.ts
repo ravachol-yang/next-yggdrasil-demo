@@ -13,13 +13,12 @@ export interface Profile {
     name: string;
     owner: string;
     skinId?: number;
-    properties?: [
-        {
+    uploadableTextures?: "skin" | "cape" | "skin,cape"
+    properties?: {
             name: string;
             value: string;
             signature?: string;
-        }
-    ]
+        } []
 }
 
 export interface Skin {
