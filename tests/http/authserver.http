@@ -44,6 +44,27 @@ Content-Type: application/json
     });
 %}
 
+### 测试认证接口（使用Carol角色）
+# @name authenticate with profile name
+POST {{host}}/authserver/authenticate
+Content-Type: application/json
+
+{
+  "username": "Carol",
+  "password": "654321",
+  "clientToken": "Test",
+  "requestUser": true
+}
+
+> {%
+    client.test("登录成功并存入 Token", function() {
+        client.assert(response.status === 200, "登录失败");
+        // 捕获规范要求的 accessToken
+        client.assert(response.body.selectedProfile.name === "Carol");
+        client.assert(response.body.user.id === "00000000-0000-0000-0000-000000000002");
+    });
+%}
+
 ###
 
 ### 测试非法登录 (密码错误)

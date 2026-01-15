@@ -2,7 +2,7 @@
 **！仅作测试，数据都是写死的，没有什么安全性或可靠性的保障！**
 
 ## 已实现的API
-`POST /authserver/authenticate` 用户登录
+`POST /authserver/authenticate` 用户登录(支持使用邮箱或直接使用角色名)
 
 `POST /authserver/refresh` 刷新令牌
 

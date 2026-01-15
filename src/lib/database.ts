@@ -45,16 +45,27 @@ const SKINS: Skin[] = [
 
 export const DB = {
 
-    getUserByEmail(email: string): User | undefined {
-        return USERS.find(user => user.email === email);
+    auth(username:string, password:string):
+        {user: User, availableProfiles: Profile[]}
+        | undefined
+    {
+
+        const user = USERS.find(user => user.email === username);
+        if(user) return user.password === password ?
+            {user, availableProfiles: PROFILES.filter(profile => profile.owner === user.id)} : undefined;
+
+        const profile = PROFILES.find(profile => profile.name === username);
+
+        if(profile) {
+            const user = this.getUserById(profile.owner);
+            return user && user.password === password ?
+                {user, availableProfiles: [profile]} : undefined;
+        }
+        return undefined;
     },
 
     getUserById(id: string): User | undefined {
         return USERS.find(user => user.id === id);
-    },
-
-    getAvailableProfiles(owner: string): Profile[] {
-        return PROFILES.filter(profile => profile.owner === owner);
     },
 
     getProfileById(id: string): Profile | undefined {
